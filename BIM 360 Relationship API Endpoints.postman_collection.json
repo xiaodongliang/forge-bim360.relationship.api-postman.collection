@@ -1,0 +1,1213 @@
+{
+	"info": {
+		"_postman_id": "420687c9-6f41-4535-8f3a-e4d10b5a4cfb",
+		"name": "BIM 360 Relationship API Endpoints",
+		"description": "This collection follows the API Reference at \r\nhttps://dev.forge.autodesk.com/en/docs/bim360/v1/reference/http/relationship-service-v2-search-relationships-GET/?sha=10129_16 \r\n\r\nIt shows the basic usage of each endpoint of API. you can add/modify with testing on more scenarios. \r\n\r\n",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "01-GET one hub",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "111cd299-b948-4f5b-8b8f-d28125517dd0",
+						"exec": [
+							"pm.test(\"Get hub collection, Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var hub_name = pm.environment.get(\"hub_name\") ",
+							"",
+							"pm.test(\"find matches hub by id: \" + hub_name, function () {",
+							"    var body = JSON.parse(responseBody);",
+							"    var find = body.data.find(d=>d.attributes.name == hub_name)",
+							"",
+							"    pm.expect(find).not.eq(undefined); ",
+							"    ",
+							"    if(find){",
+							"        pm.environment.set(\"hub_id_with_b\", find.id);",
+							"        pm.environment.set(\"hub_id_without_b\", find.id.split(\"b.\").join(\"\"));",
+							"    }else{",
+							"        ",
+							"    }",
+							"    ",
+							"});",
+							"",
+							"     "
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "4d86450e-4bfb-4a03-931c-eecfab2df9e6",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_domain}}/project/v1/hubs",
+					"host": [
+						"{{base_domain}}"
+					],
+					"path": [
+						"project",
+						"v1",
+						"hubs"
+					]
+				},
+				"description": "GET all hubs of your account, and get one hub. Please provide the hub name (hub_name) in environment variables"
+			},
+			"response": []
+		},
+		{
+			"name": "02-GET one project id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "32dc7e27-afa0-45a0-bfab-ddec7b60e0c3",
+						"exec": [
+							"pm.test(\"Get project collection, Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var project_name = pm.environment.get(\"project_name\") ",
+							"pm.test(\"find matches project by name: \" + project_name, function () {",
+							"    var body = JSON.parse(responseBody);",
+							"    var find = body.data.find(d=>d.attributes.name == project_name)",
+							"",
+							"    pm.expect(find).not.eq(undefined); ",
+							"    ",
+							"    if(find){",
+							"        pm.environment.set(\"project_id_with_b\", find.id);",
+							"        pm.environment.set(\"project_id_without_b\", find.id.split(\"b.\").join(\"\"));",
+							"    }else{",
+							"        ",
+							"    }",
+							"    ",
+							"});",
+							"",
+							"     "
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "bf6e61c9-2d59-4ae6-8682-8d2a9f0c3821",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_domain}}/project/v1/hubs/{{hub_id_with_b}}/projects",
+					"host": [
+						"{{base_domain}}"
+					],
+					"path": [
+						"project",
+						"v1",
+						"hubs",
+						"{{hub_id_with_b}}",
+						"projects"
+					]
+				},
+				"description": "GET all projects of one hub, and get one project Please provide the hub name (project_name) in environment variables"
+			},
+			"response": []
+		},
+		{
+			"name": "03-Search Relationship without Params",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "50937258-fe14-4a5d-b00d-3fe0f6dbe34c",
+						"exec": [
+							"",
+							"pm.test(\"Search Relationship without Params, Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"continuationToken is not 0 in this page: \" + project_name, function () {",
+							"    var body = JSON.parse(responseBody);",
+							"    var find = body.page.continuationToken;",
+							"",
+							"    pm.expect(find).not.eq(\"0\"); ",
+							"    pm.environment.set(\"continuationToken\", find);",
+							"",
+							"    ",
+							"});",
+							"",
+							"var project_name = pm.environment.get(\"project_name\") ",
+							"",
+							"pm.test(\"relationships is not null in project: \" + project_name, function () {",
+							"    var body = JSON.parse(responseBody);",
+							"    var find = body.relationships;",
+							"",
+							"    pm.expect(find).not.eq(undefined); ",
+							"    ",
+							"    //store two relationships Ids",
+							"",
+							"    if(find && find.length>1){",
+							"        pm.environment.set(\"one_relationship_id\", find[0].id);",
+							"        pm.environment.set(\"second_relationship_id\", find[1].id);",
+							"    } ",
+							"",
+							"    //get 4 entities for intersect test",
+							"    pm.environment.set(\"one_entity_domain\", find[0].entities[0].domain);",
+							"    pm.environment.set(\"one_entity_type\", find[0].entities[0].type);",
+							"    pm.environment.set(\"one_entity_id\", find[0].entities[0].id);",
+							"",
+							"    pm.environment.set(\"second_entity_domain\", find[0].entities[1].domain);",
+							"    pm.environment.set(\"second_entity_type\", find[0].entities[1].type);",
+							"    pm.environment.set(\"second_entity_id\", find[0].entities[1].id);",
+							"",
+							"",
+							"    pm.environment.set(\"third_entity_domain\", find[1].entities[0].domain);",
+							"    pm.environment.set(\"third_entity_type\", find[1].entities[0].type);",
+							"    pm.environment.set(\"third_entity_id\", find[1].entities[0].id);",
+							"",
+							"    pm.environment.set(\"forth_entity_domain\", find[1].entities[1].domain);",
+							"    pm.environment.set(\"forth_entity_type\", find[1].entities[1].type);",
+							"    pm.environment.set(\"forth_entity_id\", find[1].entities[1].id); ",
+							"",
+							"});",
+							"",
+							"pm.test(\"syncToken is not null: \" + project_name, function () {",
+							"    var body = JSON.parse(responseBody);",
+							"    var find = body.page.syncToken;",
+							"",
+							"    pm.expect(find).not.eq(undefined); ",
+							"    ",
+							"    //store two relationships Ids",
+							"",
+							"    if(find){",
+							"        pm.environment.set(\"syncToken\", find);",
+							"    } ",
+							"    ",
+							"});",
+							"",
+							"     "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_domain}}/bim360/relationship/v2/containers/{{project_id_without_b}}/relationships:search",
+					"host": [
+						"{{base_domain}}"
+					],
+					"path": [
+						"bim360",
+						"relationship",
+						"v2",
+						"containers",
+						"{{project_id_without_b}}",
+						"relationships:search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "04-Search Relationship with continuationToken in step 03",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8ade1aa4-163b-4bb9-9a8b-3d13403f9240",
+						"exec": [
+							"pm.test(\"Search Relationship with continuationToken, Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"relationships is not null in the next page\", function () {",
+							"    var body = JSON.parse(responseBody);",
+							"    var find = body.relationships;",
+							"",
+							"    pm.expect(find).not.eq(undefined); ",
+							"     ",
+							"    ",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_domain}}/bim360/relationship/v2/containers/{{project_id_without_b}}/relationships:search?continuationToken={{continuationToken}}",
+					"host": [
+						"{{base_domain}}"
+					],
+					"path": [
+						"bim360",
+						"relationship",
+						"v2",
+						"containers",
+						"{{project_id_without_b}}",
+						"relationships:search"
+					],
+					"query": [
+						{
+							"key": "continuationToken",
+							"value": "{{continuationToken}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "05-Search Relationship with CreatedAfter and CreatedBefore",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1ff12cbd-5253-411a-8c36-6cdd5b7ae875",
+						"exec": [
+							"pm.test(\"Search Relationship with CreatedAfter and CreatedBefore, Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var project_name = pm.environment.get(\"project_name\") ",
+							"",
+							"pm.test(\"relationships is not null in the date range in project: \" + project_name, function () {",
+							"    var body = JSON.parse(responseBody);",
+							"    var find = body.relationships;",
+							"",
+							"    pm.expect(find).not.eq(undefined); ",
+							"     ",
+							"    ",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_domain}}/bim360/relationship/v2/containers/{{project_id_without_b}}/relationships:search?createdAfter=2020-07-15&createdBefore=2020-07-20",
+					"host": [
+						"{{base_domain}}"
+					],
+					"path": [
+						"bim360",
+						"relationship",
+						"v2",
+						"containers",
+						"{{project_id_without_b}}",
+						"relationships:search"
+					],
+					"query": [
+						{
+							"key": "createdAfter",
+							"value": "2020-07-15"
+						},
+						{
+							"key": "createdBefore",
+							"value": "2020-07-20"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "06-Search Relationship with includeDeleted",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e05b152d-9755-4ad0-9e02-7041bbc613af",
+						"exec": [
+							"pm.test(\"Search Relationship with includeDeleted, Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var project_name = pm.environment.get(\"project_name\") ",
+							"",
+							"pm.test(\"relationships is not null in project: \" + project_name, function () {",
+							"    var body = JSON.parse(responseBody);",
+							"    var find = body.relationships;",
+							"",
+							"    pm.expect(find).not.eq(undefined); ",
+							"     ",
+							"    ",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_domain}}/bim360/relationship/v2/containers/{{project_id_without_b}}/relationships:search?includeDeleted=true",
+					"host": [
+						"{{base_domain}}"
+					],
+					"path": [
+						"bim360",
+						"relationship",
+						"v2",
+						"containers",
+						"{{project_id_without_b}}",
+						"relationships:search"
+					],
+					"query": [
+						{
+							"key": "includeDeleted",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "07-Search Relationship with Domain and Type - Clash",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "be2e2b4a-bde1-4eb9-a4a2-2c1f2a3e7245",
+						"exec": [
+							"pm.test(\"Search Relationship with Domain and Type - Clash, Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"relationships is not null\", function () {",
+							"    var body = JSON.parse(responseBody);",
+							"    var find = body.relationships;",
+							"",
+							"    pm.expect(find).not.eq(undefined); ",
+							"     ",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_domain}}/bim360/relationship/v2/containers/{{project_id_without_b}}/relationships:search?domain=autodesk-bim360-modelcoordination&type=clashgroup",
+					"host": [
+						"{{base_domain}}"
+					],
+					"path": [
+						"bim360",
+						"relationship",
+						"v2",
+						"containers",
+						"{{project_id_without_b}}",
+						"relationships:search"
+					],
+					"query": [
+						{
+							"key": "domain",
+							"value": "autodesk-bim360-modelcoordination"
+						},
+						{
+							"key": "type",
+							"value": "clashgroup"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "08-Search Relationship with  withDomain&withType - Document| Issue",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c5cf2f27-ba18-4d88-9951-e6062bfb5927",
+						"exec": [
+							"pm.test(\"Search Relationship with  withDomain&withType - Document| Issue, Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"relationships is not null\", function () {",
+							"    var body = JSON.parse(responseBody);",
+							"    var find = body.relationships;",
+							"",
+							"    pm.expect(find).not.eq(undefined); ",
+							"     ",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_domain}}/bim360/relationship/v2/containers/{{project_id_without_b}}/relationships:search?domain=autodesk-bim360-issue&type=coordination&withDomain=autodesk-bim360-documentmanagement&withType=documentversion",
+					"host": [
+						"{{base_domain}}"
+					],
+					"path": [
+						"bim360",
+						"relationship",
+						"v2",
+						"containers",
+						"{{project_id_without_b}}",
+						"relationships:search"
+					],
+					"query": [
+						{
+							"key": "domain",
+							"value": "autodesk-bim360-issue"
+						},
+						{
+							"key": "type",
+							"value": "coordination"
+						},
+						{
+							"key": "withDomain",
+							"value": "autodesk-bim360-documentmanagement"
+						},
+						{
+							"key": "withType",
+							"value": "documentversion"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "09-Search Relationship with Domain and Type - Asset",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3135e26c-3446-403e-9fd8-f879689c83c7",
+						"exec": [
+							"pm.test(\"Search Relationship with Domain and Type - Asset, Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"relationships is not null\", function () {",
+							"    var body = JSON.parse(responseBody);",
+							"    var find = body.relationships;",
+							"",
+							"    pm.expect(find).not.eq(undefined); ",
+							"     ",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_domain}}/bim360/relationship/v2/containers/{{project_id_without_b}}/relationships:search?domain=autodesk-bim360-asset&type=asset",
+					"host": [
+						"{{base_domain}}"
+					],
+					"path": [
+						"bim360",
+						"relationship",
+						"v2",
+						"containers",
+						"{{project_id_without_b}}",
+						"relationships:search"
+					],
+					"query": [
+						{
+							"key": "domain",
+							"value": "autodesk-bim360-asset"
+						},
+						{
+							"key": "type",
+							"value": "asset"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "10-Search Relationship with  withDomain&withType - Asset| Checklist",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6e4c7917-647f-4779-9bcc-6b2af9b502cc",
+						"exec": [
+							"pm.test(\"-Search Relationship with  withDomain&withType - Asset| Checklist, Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"relationships is not null\", function () {",
+							"    var body = JSON.parse(responseBody);",
+							"    var find = body.relationships;",
+							"",
+							"    pm.expect(find).not.eq(undefined); ",
+							"     ",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_domain}}/bim360/relationship/v2/containers/{{project_id_without_b}}/relationships:search?domain=autodesk-bim360-asset&type=asset&withDomain=autodesk-bim360-checklist&withType=checklist",
+					"host": [
+						"{{base_domain}}"
+					],
+					"path": [
+						"bim360",
+						"relationship",
+						"v2",
+						"containers",
+						"{{project_id_without_b}}",
+						"relationships:search"
+					],
+					"query": [
+						{
+							"key": "domain",
+							"value": "autodesk-bim360-asset"
+						},
+						{
+							"key": "type",
+							"value": "asset"
+						},
+						{
+							"key": "withDomain",
+							"value": "autodesk-bim360-checklist"
+						},
+						{
+							"key": "withType",
+							"value": "checklist"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "11-Intersect Relationship with only one entity in step3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "079ea6a7-da63-4d88-b680-f12d747d8f7e",
+						"exec": [
+							"pm.test(\"Intersect Relationship with only one entity in step3, Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"relationships is not null\", function () {",
+							"    var body = JSON.parse(responseBody);",
+							"    var find = body.relationships;",
+							"",
+							"    pm.expect(find).not.eq(undefined); ",
+							"     ",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"entities\": [\r\n             {\r\n               \"domain\": \"{{one_entity_domain}}\",\r\n               \"type\": \"{{one_entity_type}}\" ,\r\n                \"id\": \"{{one_entity_id}}\"\r\n              }\r\n        ]\r\n}"
+				},
+				"url": {
+					"raw": "{{base_domain}}/bim360/relationship/v2/containers/{{project_id_without_b}}/relationships:intersect",
+					"host": [
+						"{{base_domain}}"
+					],
+					"path": [
+						"bim360",
+						"relationship",
+						"v2",
+						"containers",
+						"{{project_id_without_b}}",
+						"relationships:intersect"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "12-Intersect Relationship with two entities in step 03",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "af7dc0ab-36d6-4eed-9b6e-a85998197889",
+						"exec": [
+							"pm.test(\"Intersect Relationship with two entities in step 03, Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"relationships is not null\", function () {",
+							"    var body = JSON.parse(responseBody);",
+							"    var find = body.relationships;",
+							"",
+							"    pm.expect(find).not.eq(undefined); ",
+							"     ",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"entities\": [\r\n             {\r\n               \"domain\": \"{{one_entity_domain}}\",\r\n               \"type\": \"{{one_entity_type}}\" ,\r\n                \"id\": \"{{one_entity_id}}\"\r\n              },\r\n              {\r\n               \"domain\": \"{{second_entity_domain}}\",\r\n               \"type\": \"{{second_entity_type}}\" ,\r\n                \"id\": \"{{second_entity_id}}\"\r\n              }\r\n\r\n        ]\r\n}"
+				},
+				"url": {
+					"raw": "{{base_domain}}/bim360/relationship/v2/containers/{{project_id_without_b}}/relationships:intersect",
+					"host": [
+						"{{base_domain}}"
+					],
+					"path": [
+						"bim360",
+						"relationship",
+						"v2",
+						"containers",
+						"{{project_id_without_b}}",
+						"relationships:intersect"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "13-Intersect Relationship with one  entity and one withEntity in step03",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7e7c2129-165b-4cb6-8b07-e33fc7639d30",
+						"exec": [
+							"pm.test(\"13-Intersect Relationship with one entity and one withEntity in step 03, Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"relationships is not null\", function () {",
+							"    var body = JSON.parse(responseBody);",
+							"    var find = body.relationships;",
+							"",
+							"    pm.expect(find).not.eq(undefined); ",
+							"     ",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"entities\": [\r\n             {\r\n               \"domain\": \"{{one_entity_domain}}\",\r\n               \"type\": \"{{one_entity_type}}\" ,\r\n                \"id\": \"{{one_entity_id}}\"\r\n              }\r\n    ],\r\n    \"withEntities\":[\r\n              {\r\n               \"domain\": \"{{second_entity_domain}}\",\r\n               \"type\": \"{{second_entity_type}}\" ,\r\n                \"id\": \"{{second_entity_id}}\"\r\n              }\r\n\r\n    ] \r\n}"
+				},
+				"url": {
+					"raw": "{{base_domain}}/bim360/relationship/v2/containers/{{project_id_without_b}}/relationships:intersect",
+					"host": [
+						"{{base_domain}}"
+					],
+					"path": [
+						"bim360",
+						"relationship",
+						"v2",
+						"containers",
+						"{{project_id_without_b}}",
+						"relationships:intersect"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "14-Intersect Relationship with two entities and two withEntities in step03",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8c6ebdc7-ee9a-444a-a261-54589d65e232",
+						"exec": [
+							"pm.test(\"Intersect Relationship with two entities and two withEntities in step03, Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"relationships is not null\", function () {",
+							"    var body = JSON.parse(responseBody);",
+							"    var find = body.relationships;",
+							"",
+							"    pm.expect(find).not.eq(undefined); ",
+							"     ",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"entities\": [\r\n             {\r\n               \"domain\": \"{{one_entity_domain}}\",\r\n               \"type\": \"{{one_entity_type}}\" ,\r\n                \"id\": \"{{one_entity_id}}\"\r\n              },\r\n              {\r\n               \"domain\": \"{{second_entity_domain}}\",\r\n               \"type\": \"{{second_entity_type}}\" ,\r\n                \"id\": \"{{second_entity_id}}\"\r\n              }\r\n    ],\r\n    \"withEntities\":[\r\n              {\r\n               \"domain\": \"{{second_entity_domain}}\",\r\n               \"type\": \"{{second_entity_type}}\" ,\r\n                \"id\": \"{{second_entity_id}}\"\r\n              },\r\n              {\r\n               \"domain\": \"{{forth_entity_domain}}\",\r\n               \"type\": \"{{forth_entity_type}}\" ,\r\n                \"id\": \"{{forth_entity_id}}\"\r\n              }\r\n\r\n    ] \r\n}"
+				},
+				"url": {
+					"raw": "{{base_domain}}/bim360/relationship/v2/containers/{{project_id_without_b}}/relationships:intersect",
+					"host": [
+						"{{base_domain}}"
+					],
+					"path": [
+						"bim360",
+						"relationship",
+						"v2",
+						"containers",
+						"{{project_id_without_b}}",
+						"relationships:intersect"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "15-Get One Relationship",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ba5ea465-cce3-49e7-baa2-ac8f6c395c6e",
+						"exec": [
+							"pm.test(\"Get One Relationship, Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"entities is not null\", function () {",
+							"    var body = JSON.parse(responseBody);",
+							"    var find = body.entities;",
+							"",
+							"    pm.expect(find).not.eq(undefined); ",
+							"     ",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_domain}}/bim360/relationship/v2/containers/{{project_id_without_b}}/relationships/{{one_relationship_id}}",
+					"host": [
+						"{{base_domain}}"
+					],
+					"path": [
+						"bim360",
+						"relationship",
+						"v2",
+						"containers",
+						"{{project_id_without_b}}",
+						"relationships",
+						"{{one_relationship_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "16-Batch Get Relationships",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e2be1da4-8f45-4295-b207-6895f4cd0085",
+						"exec": [
+							"pm.test(\"Batch Get Relationships, Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"array is not 0 length\", function () {",
+							"    var body = JSON.parse(responseBody);",
+							"    var find = body;",
+							"",
+							"    pm.expect(body.length).not.eq(0); ",
+							"     ",
+							"    ",
+							"});",
+							"",
+							"pm.test(\"entities of one relationship is not null\", function () {",
+							"    var body = JSON.parse(responseBody);",
+							"    var find = body[0].entities;",
+							"",
+							"    pm.expect(find).not.eq(undefined);  ",
+							"    ",
+							"});",
+							"",
+							"pm.test(\"entities of second relationship is not null\", function () {",
+							"    var body = JSON.parse(responseBody);",
+							"    var find = body[1].entities;",
+							"",
+							"    pm.expect(find).not.eq(undefined);  ",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    \"{{one_relationship_id}}\",\r\n    \"{{second_relationship_id}}\"\r\n]"
+				},
+				"url": {
+					"raw": "{{base_domain}}/bim360/relationship/v2/containers/{{project_id_without_b}}/relationships:batch",
+					"host": [
+						"{{base_domain}}"
+					],
+					"path": [
+						"bim360",
+						"relationship",
+						"v2",
+						"containers",
+						"{{project_id_without_b}}",
+						"relationships:batch"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "17-Sync Relationship with  syncToken in step 03",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "baea33cf-2f4c-4d30-971f-8303243da763",
+						"exec": [
+							"pm.test(\"Sync Relationship with syncToken in step 03, Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"current is not null\", function () {",
+							"    var body = JSON.parse(responseBody);",
+							"    var find = body.current.data;",
+							"",
+							"    pm.expect(find).not.eq(undefined); ",
+							"     ",
+							"    ",
+							"});",
+							"",
+							"pm.test(\"deleted is not null\", function () {",
+							"    var body = JSON.parse(responseBody);",
+							"    var find = body.deleted.data;",
+							"",
+							"    pm.expect(find).not.eq(undefined); ",
+							"     ",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"syncToken\":\"{{syncToken}}\"\r\n}"
+				},
+				"url": {
+					"raw": "{{base_domain}}/bim360/relationship/v2/containers/{{project_id_without_b}}/relationships:sync",
+					"host": [
+						"{{base_domain}}"
+					],
+					"path": [
+						"bim360",
+						"relationship",
+						"v2",
+						"containers",
+						"{{project_id_without_b}}",
+						"relationships:sync"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "18-Sync Relationship with  filter only",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1fc0ca8a-cd45-4a8c-806b-ee4ea26e03a7",
+						"exec": [
+							"pm.test(\"Sync Relationship with syncToken in step 03, Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"current is not null\", function () {",
+							"    var body = JSON.parse(responseBody);",
+							"    var find = body.current.data;",
+							"",
+							"    pm.expect(find).not.eq(undefined); ",
+							"     ",
+							"    ",
+							"});",
+							"",
+							"pm.test(\"deleted is not null\", function () {",
+							"    var body = JSON.parse(responseBody);",
+							"    var find = body.deleted.data;",
+							"",
+							"    pm.expect(find).not.eq(undefined); ",
+							"     ",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"filters\":{\r\n        \"domains\":[\r\n            \"autodesk-bim360-modelcoordination\",\r\n            \"autodesk-bim360-issue\"\r\n        ]\r\n    }\r\n}"
+				},
+				"url": {
+					"raw": "{{base_domain}}/bim360/relationship/v2/containers/{{project_id_without_b}}/relationships:sync",
+					"host": [
+						"{{base_domain}}"
+					],
+					"path": [
+						"bim360",
+						"relationship",
+						"v2",
+						"containers",
+						"{{project_id_without_b}}",
+						"relationships:sync"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "19-Get Relationship Sync Status with syncToken in step3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3ee5fd4a-73c4-491c-8d06-6d41c0eca9bf",
+						"exec": [
+							"pm.test(\"19-Get Relationship Sync Status with syncToken in step3, Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"results is not null\", function () {",
+							"    var body = JSON.parse(responseBody);",
+							"    var find = body.results;",
+							"",
+							"    pm.expect(find).not.eq(undefined); ",
+							"     ",
+							"    ",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    {\r\n    \"syncToken\":\"{{syncToken}}\",\r\n    \"referenceId\":\"dummy-test\"\r\n    }\r\n]"
+				},
+				"url": {
+					"raw": "{{base_domain}}/bim360/relationship/v2/containers/{{project_id_without_b}}/relationships:syncStatus",
+					"host": [
+						"{{base_domain}}"
+					],
+					"path": [
+						"bim360",
+						"relationship",
+						"v2",
+						"containers",
+						"{{project_id_without_b}}",
+						"relationships:syncStatus"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "oauth2",
+		"oauth2": [
+			{
+				"key": "accessToken",
+				"value": "eyJhbGciOiJIUzI1NiIsImtpZCI6Imp3dF9zeW1tZXRyaWNfa2V5In0.eyJzY29wZSI6WyJkYXRhOnJlYWQiXSwiY2xpZW50X2lkIjoiTjlxWEswOFBZdHRpY1dUR3NxaEJ1SjNnRTJKSTIzNEoiLCJncmFudF9pZCI6IlRVNU90aDcwRWRvZ01ZU3BHaVBBTHl0U2tUdk9adUF4IiwiYXVkIjoiaHR0cHM6Ly9hdXRvZGVzay5jb20vYXVkL2p3dGV4cDYwIiwianRpIjoiOTNDMUJIM1FnTXgwbDdZTG9IZXc0bmtwMzdTbjd5ZjBHaU9XN25MNzE5NXJDUGIyblo2OHZscWxlM096c3g3QSIsInVzZXJpZCI6IjIwMDkwMjI2MDUzMjYyMSIsImV4cCI6MTU5NTQxMDQwMX0.ovIUaa4aW97qG-uMHhUCAfQ-npltf54p1A3WVLiHkBc",
+				"type": "string"
+			},
+			{
+				"key": "tokenType",
+				"value": "Bearer",
+				"type": "string"
+			},
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "270faaed-82b0-4b84-a5cc-6a7541ec1fbc",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "45052b69-4086-45c3-87a2-bf96989e9d1f",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
