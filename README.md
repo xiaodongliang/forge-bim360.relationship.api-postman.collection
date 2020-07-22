@@ -7,7 +7,7 @@
 
 ## Description
 
-This repository provides demos for [API Reference](https://dev.forge.autodesk.com/en/docs/bim360/v1/reference/http/relationship-service-v2-get-relationships-batch-POST/?sha=10129_16).
+This repository provides demos for [API Reference](https://dev.forge.autodesk.com/en/docs/bim360/v1/reference/http/relationship-service-v2-get-relationships-batch-POST/?sha=10129_16) of Relationship API.
 
 ## What's Postman?
 
