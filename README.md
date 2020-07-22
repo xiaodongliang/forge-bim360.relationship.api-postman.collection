@@ -72,6 +72,7 @@ Postman is a popular tool that provides an easy-to-use interface to send HTTP re
 1. Assume the steps of **Setup** have been performed. The access token is ready.
 
 2. Play the scripts. Try to change some parameters or body with more scenarios. 
+   <p align="center"><img src="./help/collection.png" width="600" ></p> 
 
 3. With [Postman Runner](https://learning.postman.com/docs/running-collections/intro-to-collection-runs/), these scripts can be chained to perform auto-test. Check **Tests** tab to define your preferred tests.
 
